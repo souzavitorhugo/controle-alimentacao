@@ -1,0 +1,34 @@
+.header-container{
+    display: grid;
+    grid-template-columns: 200px auto;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
+.header-logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+
+.header-center{
+    background-color: #4F81E9;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-center h4{
+    text-align: center;
+    color: white;
+}
+
+@media screen and (max-width: 450px) {
+    .header-container{
+        display: grid;
+        grid-template-rows: auto auto;
+        flex-wrap: nowrap;
+        flex-direction: row;
+    }
+}
