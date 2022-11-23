@@ -15,7 +15,19 @@ function App() {
       <Routes>
 
         <Route path='/'>
-          <Route index element={<PaginaPrincipal/>}/>
+          <Route index element={<PaginaPrincipal modulo={"inicio"}/>}/>
+        </Route>
+
+        <Route path='/animais'>
+          <Route index element={<PaginaPrincipal modulo={"animais"}/>}/>
+        </Route>
+
+        <Route path='/alimentacao'>
+          <Route index element={<PaginaPrincipal modulo={"alimentacao"}/>}/>
+        </Route>
+
+        <Route path='/vacinacao'>
+          <Route index element={<PaginaPrincipal modulo={"vacinacao"}/>}/>
         </Route>
 
       </Routes>
