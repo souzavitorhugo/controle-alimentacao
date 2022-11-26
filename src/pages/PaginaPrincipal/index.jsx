@@ -5,8 +5,10 @@ import { Link } from 'react-router-dom'
 //import Navigator from '../../components/Navigation/index';
 import Header from '../../components/Header/index';
 
+import ModuloAnimais from '../../modulos/Animais/index';
 import ModuloAlimentacao from '../../modulos/Alimentacao/index';
 import ModuloVacinacao from '../../modulos/Vacinacao/index';
+import ModuloInicial from '../../modulos/Padrao/index';
 
 import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";
@@ -35,26 +37,29 @@ export default function PaginaPrincipal(props) {
         document.getElementById("main").style.marginLeft = "0";
     }
 
-    const getModulo = () => {
-        let modulo;
+    function getModulo (modulo, setModulo) {
+        let novoModulo;
 
-        switch(props.modulo){
+        switch(modulo){
             case "inicio":
-                modulo = 'inicio';
+                novoModulo = <ModuloInicial/>;
                 break;
             case "alimentacao":
-                modulo = <ModuloAlimentacao/>
+                novoModulo = <ModuloAlimentacao/>
                 break;
             case "vacinacao":
-                modulo = <ModuloVacinacao/>
+                novoModulo = <ModuloVacinacao/>
+                break;
+            case "animais":
+                novoModulo = <ModuloAnimais/>
                 break;
         }
     
-        return setModulo(modulo);
+        return setModulo(novoModulo);
     }
 
     useEffect(() => {
-        getModulo(props.modulo)
+        getModulo(props.modulo, setModulo)
     }, [])
 
     return (
@@ -73,23 +78,39 @@ export default function PaginaPrincipal(props) {
                     </Link>
 
                     <hr/>
-                    <span className="nav-btn"> <img src={animaisBtn} className="" alt="botão do menu animais"/> Animais </span>
+
+                    <Link to="/animais">
+                        <span className="nav-btn"> <img src={animaisBtn} className="" alt="botão do menu animais"/> Animais </span>
+                    </Link>
+
                     <hr/>
-                    <span className="nav-btn"> <img src={alimentacaoBtn} className="" alt="botão do menu inicio"/> Alimentação </span>
+
+                    <Link to="/alimentacao">
+                        <span className="nav-btn"> <img src={alimentacaoBtn} className="" alt="botão do menu inicio"/> Alimentação </span>
+                    </Link>
+
                     <hr/>
-                    <span className="nav-btn"> <img src={vacinacaoBtn} className="" alt="botão do menu inicio"/> Vacinação </span>
+
+                    <Link to="/vacinacao">
+                        <span className="nav-btn"> <img src={vacinacaoBtn} className="" alt="botão do menu inicio"/> Vacinação </span>
+                    </Link>
+
                     <hr/>
                 </nav>
 
 
                 <section className="main-container">
-                <aside className="flex-align-left">
-                    <img src={burguerImg} className="burguer-img" alt="botão do menu" onClick={openNav}/>
-                </aside>
 
-                <main id="main" className="modulo-container">
-                    {modulo}
-                </main>
+                    <aside className="container-btn-menu">
+                        <div className="container-img">
+                            <img src={burguerImg} className="burguer-img" alt="botão do menu" onClick={openNav}/>
+                        </div>
+                    </aside>
+
+                    <main id="main" className="modulo-container">
+                        {modulo}
+                    </main>
+                    
                 </section>
 
             </div>

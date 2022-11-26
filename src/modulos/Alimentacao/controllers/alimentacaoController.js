@@ -9,11 +9,9 @@ export async function importaDadosAlimentacao(){
         url: API_URL+'/api/Alimentacao/ListarAlimentacoes',
         responseType: "json",
     }).then((resp) => {
-        debugger;
         lista = resp;
         return lista
     }).catch((resp) => {
-        debugger;
     })
         
     return lista;
