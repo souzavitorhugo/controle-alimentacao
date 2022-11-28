@@ -110,3 +110,7 @@
         grid-template-rows: 128px auto;
     }
 }
+
+.container-table{
+    border: 2px solid black;
+}

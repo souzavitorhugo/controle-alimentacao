@@ -1,4 +1,5 @@
 export default function Table(props){
+    debugger;
     return(
         <table>
             <thead>

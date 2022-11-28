@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import './App.css';
 import PaginaPrincipal from './pages/PaginaPrincipal/index';
+import PaginaAlimentacao from './pages/PaginaAlimentacao/index';
+import PaginaAnimais from './pages/PaginaAnimais/index';
+
 
 //Ideia é ter a barra notificando o nome do usuario logado com o logo à esquerda na tela principal
 //abaixo da logo, vem o collapse de navegação 
@@ -19,16 +22,16 @@ function App() {
         </Route>
 
         <Route path='/animais'>
-          <Route index element={<PaginaPrincipal modulo={"animais"}/>}/>
+          <Route index element={<PaginaAnimais modulo={"animais"}/>}/>
         </Route>
 
         <Route path='/alimentacao'>
-          <Route index element={<PaginaPrincipal modulo={"alimentacao"}/>}/>
+          <Route index element={<PaginaAlimentacao modulo={"alimentacao"}/>}/>
         </Route>
 
-        <Route path='/vacinacao'>
+        {/* <Route path='/vacinacao'>
           <Route index element={<PaginaPrincipal modulo={"vacinacao"}/>}/>
-        </Route>
+        </Route> */}
 
       </Routes>
                   

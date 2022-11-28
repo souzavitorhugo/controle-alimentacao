@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom'
 //import Navigator from '../../components/Navigation/index';
 import Header from '../../components/Header/index';
 
-import MainButton from '../../components/Buttons/MainButton/index'
-
+// import { importaDadosAlimentacao } from './controllers/alimentacaoController';
 
 import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";
@@ -16,8 +15,14 @@ import vacinacaoBtn from "./append/btn-vacinacao.png";
 
 import './index.css'
 
-export default function PaginaPrincipal(props) {
-    const [modulo, setModulo] = useState();
+export default function PaginaAnimais(props) {
+    const [data, setData] = useState({});
+
+    // useEffect(() => {
+    //     // const dadosAlimentacao = importaDadosAlimentacao();
+    //     // setData(dadosAlimentacao);
+    //     // debugger;
+    // }, [])
 
     const openNav = (a, b, c, d, e) => {
         let screenWidth = window.screen.width;
@@ -81,7 +86,47 @@ export default function PaginaPrincipal(props) {
                     </aside>
 
                     <main id="main" className="modulo-container">
-                        <MainButton/>
+
+                        <table className="container-table">
+                            <thead>
+
+                                <tr>
+                                    <th>
+                                        tabela animais
+                                    </th> 
+
+                                    <th>
+                                        tabela animais 2
+                                    </th> 
+
+                                    <th>
+                                        tabela animais 3
+                                    </th> 
+                                </tr>
+                                
+                                
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        linha 1 da coluna 1
+
+                                    </td>
+
+                                    <td>
+                                        linha 1 da coluna 2
+
+                                    </td>
+
+                                    <td>
+                                        linha 1 da coluna 3
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                     </main>
                     
                 </section>
