@@ -1,3 +1,12 @@
+tr{
+    text-align: center; 
+ }
+
+table {
+    border-spacing: 0;
+    background: white;
+}
+
 .page-container{
     display: grid;
     grid-template-columns: auto;
@@ -84,7 +93,7 @@
 }
 
 .modulo-container{
-    padding: 10px 0 0 25px;
+    padding: 10px 25px 0 25px;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
@@ -109,4 +118,91 @@
         grid-template-columns: auto;
         grid-template-rows: 128px auto;
     }
+}
+
+.th-titulo-tabela{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 0 5px 0;
+}
+
+.th-footer-tabela{
+    font-size: 0.85rem;
+    color: #b6b6b6;
+}
+
+.container-table{
+    margin-top: 15px;
+    width: 100%;
+}
+
+tbody tr:nth-child(even) {
+    background-color: rgba(235, 235, 235, 0.5);
+}
+
+.table-header-border{
+    border: 1.5px solid rgb(235, 235, 235);
+}
+
+.table-body-border{
+    border: 1.5px solid rgb(235, 235, 235);
+    border-bottom: none;
+}
+
+.last-table-row{
+    border: 1.5px solid rgb(235, 235, 235);
+}
+
+.menu-btn-container{
+    
+    border: 2px solid black;
+}
+
+.modal-container{
+    position: absolute;
+    padding: 15px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #000;
+    background-color: white;
+}
+
+.titulo-modal{
+    margin: 0 0 10px 0;
+    text-align: center;
+}
+
+.form-container-inputs{
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.container-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container-form-button {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.container-submit{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.display-none{
+    display: none;
 }

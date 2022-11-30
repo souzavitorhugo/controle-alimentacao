@@ -7,7 +7,6 @@ import Header from '../../components/Header/index';
 
 import MainButton from '../../components/Buttons/MainButton/index'
 
-
 import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";
 import animaisBtn from "./append/btn-animais.png";
@@ -17,7 +16,7 @@ import vacinacaoBtn from "./append/btn-vacinacao.png";
 import './index.css'
 
 export default function PaginaPrincipal(props) {
-    const [modulo, setModulo] = useState();
+    const modulos = ['animais', 'alimentacao'];
 
     const openNav = (a, b, c, d, e) => {
         let screenWidth = window.screen.width;
@@ -81,7 +80,21 @@ export default function PaginaPrincipal(props) {
                     </aside>
 
                     <main id="main" className="modulo-container">
-                        <MainButton/>
+
+                        <div className="btn-container">
+                            <Link to="/animais">
+                                <button className="btn-menu"> <img src={animaisBtn} alt="botão menu da tela"/> <span> Animais </span>  </button>
+                            </Link>
+
+                            <Link to="/alimentacao">
+                                <button className="btn-menu"> <img src={alimentacaoBtn} alt="botão menu da tela"/> <span> Alimentação </span>  </button>
+                            </Link>
+
+                            <Link to="/vacinacao">
+                                <button className="btn-menu"> <img src={vacinacaoBtn} alt="botão menu da tela"/> <span> Vacinação </span>  </button>
+                            </Link>
+                        </div>
+                        
                     </main>
                     
                 </section>

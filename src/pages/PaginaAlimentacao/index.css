@@ -84,7 +84,7 @@
 }
 
 .modulo-container{
-    padding: 10px 0 0 25px;
+    padding: 10px 25px 0 25px;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
@@ -109,8 +109,4 @@
         grid-template-columns: auto;
         grid-template-rows: 128px auto;
     }
-}
-
-.container-table{
-    border: 2px solid black;
 }
