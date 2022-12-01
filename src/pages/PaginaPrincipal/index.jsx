@@ -2,10 +2,7 @@ import {Fragment, useEffect, useState} from 'react';
 
 import { Link } from 'react-router-dom'
 
-//import Navigator from '../../components/Navigation/index';
 import Header from '../../components/Header/index';
-
-import MainButton from '../../components/Buttons/MainButton/index'
 
 import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";

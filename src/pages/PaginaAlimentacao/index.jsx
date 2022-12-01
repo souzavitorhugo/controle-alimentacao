@@ -2,7 +2,6 @@ import {Fragment, useEffect, useState} from 'react';
 
 import { Link } from 'react-router-dom'
 
-//import Navigator from '../../components/Navigation/index';
 import Header from '../../components/Header/index';
 
 import { listarAlimentacoes } from '../../actions/controllers/alimentacaoController';

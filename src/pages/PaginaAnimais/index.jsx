@@ -1,22 +1,24 @@
 import {Fragment, useEffect, useState} from 'react';
 
 import { Link } from 'react-router-dom'
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
-//import Navigator from '../../components/Navigation/index';
-import Header from '../../components/Header/index';
-import FormCadastroAnimal from '../../components/Forms/formCadastroAnimal';
-import FormCadastroTeste from '../../components/Forms/formCadastroAnimal';
 
-import { listarAnimais } from '../../actions/controllers/animaisController';
+import Header from '../../components/Header/index';
+
+import {useFormik} from 'formik';
+import * as Yup from 'yup';
+
+import { listarRFID } from '../../actions/controllers/rfidController';
+import { listarRacas, listarEspecies, cadastrarAnimais, listarAnimais } from '../../actions/controllers/animaisController';
 
 import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";
 import animaisBtn from "./append/btn-animais.png";
 import pataBtn from "./append/btn-pata.png";
 import vacinacaoBtn from "./append/btn-vacinacao.png";
+import Input from '../../components/Inputs/inputs';
 
 import './index.css'
 
@@ -24,16 +26,120 @@ export default function PaginaAnimais(props) {
     const [data, setData] = useState();
     const [open, setOpen] = useState(false);
 
+    const [listaRfids, setListaRfids] = useState();
+    const [listaTiposAnimais, setListaTiposAnimais] = useState();
+
+    const [tiposAnimais, setTiposAnimais] = useState('');
+    const [listaRacas, setListaRacas] = useState();
+    const [disabled, setDisabled] = useState(true);
+
+    const hasFormError = (formik, field) => {
+        if (!!formik.errors[field] && formik.touched[field]) {
+          return formik.errors[field];
+        }
+      
+        return null;
+    };
+
+    const handleChangeEspecies = (event) => {
+        setTiposAnimais(event.target.value)
+
+        listarRacas(function(resp) {
+            if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+
+            let listaRetornoAPI = resp.body;
+            let listaFiltrada = listaRetornoAPI.filter(item => item.tipoAnimal.id == event.target.value)
+            setDisabled(false);
+            setListaRacas(listaFiltrada);
+        })
+    }
+
+    const validationSchema = Yup.object({
+        rfid: Yup.number().required("Campo obrigatório"),
+        animal: Yup.number().required("Campo obrigatório"),
+        raca: Yup.number().required("Campo obrigatório"),
+        genero: Yup.number().required("Campo obrigatório"),
+        peso: Yup.string().required("Campo obrigatório")
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            rfid: "",
+            animal: "",
+            raca: "",
+            dataNascimento: "",
+            genero: "",
+            peso: ""
+        },
+        validationSchema,
+        onSubmit: async values => {
+          const dtoCadastro = {
+            "codigoRfId": parseInt(values.rfid),
+            "codigoTipoAnimal": parseInt(values.animal),
+            "codigoRaca": parseInt(values.raca),
+            "dataNacimento": values.dataNascimento,
+            "peso": parseInt(values.peso),
+            "genero": values.genero == 1 ? true : false
+          };
+
+          try{
+            const data = await cadastrarAnimais(dtoCadastro);
+            if(!!data?.success){
+                handleClose();
+                atualizaHookData();
+                atualizaHookRFID();
+                atualizaHookEspecies();
+                window.alert('Animal cadastrado com sucesso');
+                formik.rfid = "";
+                formik.animal = "";
+                formik.raca = "";
+                formik.dataNascimento = "";
+                formik.genero = "";
+                formik.peso = "";
+            } else {
+                window.alert(data.reasonPhrase);
+            }
+          } catch (err) {
+            window.alert(err.reasonPhrase);
+          }
+        },
+    });
+
     const style = {
         bgcolor: 'background.paper',
         boxShadow: 10,
     };
 
-    useEffect(() => {
+    const atualizaHookData = () => {
         listarAnimais(function(resp) {
             if(!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
             setData(resp.body);
         });
+    }
+
+    const atualizaHookRFID = () => {
+        listarRFID(function(resp) {
+            if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+            
+            let listaRetornoAPI = resp.body;
+            let listaInativos = listaRetornoAPI.filter(item => item.emUso === false && item.ativo === true);
+            setListaRfids(listaInativos);
+        });
+    }
+
+    const atualizaHookEspecies = () => {
+        listarEspecies(function(resp) {
+            if(!resp.success) return window.alert("Erro na consulta ao banco das especies, por favor tente novamente");
+            setListaTiposAnimais(resp.body);
+        })
+    }
+
+    useEffect(() => {
+        atualizaHookData();
+
+        atualizaHookRFID();
+
+        atualizaHookEspecies();
     }, [])
 
     const openNav = (a, b, c, d, e) => {
@@ -217,8 +323,90 @@ export default function PaginaAnimais(props) {
 
                         <h4 className="titulo-modal"> CADASTRO </h4>
                             
-                        {/* <FormCadastroAnimal/> */}
-                        <FormCadastroTeste handleCloseModal={handleClose}/>
+                        <div className="container-form">
+
+                            <form onSubmit={formik.handleSubmit}> 
+
+                                <div className="form-container-inputs">
+                                    <Input
+                                        id="rfid"
+                                        options={listaRfids?.map(rfid => ({value: rfid.id, label: rfid.codigoRFID}))}
+                                        placeholder="Escolha o RFID"
+                                        type="select"
+                                        label="RFID"
+                                        value={formik.values.rfid}
+                                        onChange={formik.handleChange}
+                                        error={hasFormError(formik, "rfid")}
+                                    />
+
+                                    <Input
+                                        id="animal"
+                                        options={listaTiposAnimais?.map(tipoAnimal => ({value: tipoAnimal.id, label: tipoAnimal.tipo}))}
+                                        placeholder="Escolha o Animal"
+                                        type="select"
+                                        label="Animal"
+                                        value={formik.values.animal}
+                                        onChange={(e) => {formik.handleChange(e); handleChangeEspecies(e)}}
+                                        error={hasFormError(formik, "animal")}
+                                    />
+
+                                    <Input
+                                        id="raca"
+                                        options={listaRacas?.map(raca => ({value: raca.id, label: raca.raca}))}
+                                        placeholder="Escolha a Raça"
+                                        type="select"
+                                        label="Raça"
+                                        value={formik.values.raca}
+                                        onChange={formik.handleChange}
+                                        error={hasFormError(formik, "raca")}
+                                        disabled={!!disabled}
+                                    />
+
+                                    <div>
+                                        <label className="form-label" htmlFor="dataNascimento">
+                                            Data Nascimento
+                                        </label>
+
+                                        <input 
+                                        className="form-control"
+                                        id="dataNascimento"
+                                        type="date"
+                                        value={formik.values.dataNascimento}
+                                        onChange={formik.handleChange}
+                                        error={hasFormError(formik, "dataNascimento")}
+                                        ></input>
+                                    </div>
+                                    
+                                    
+                                    <Input
+                                        id="genero"
+                                        options={[{value: 1, label: 'Macho'}, {value: 0, label: 'Fêmea'}]}
+                                        placeholder="Gênero"
+                                        type="select"
+                                        label="Gênero"
+                                        value={formik.values.genero}
+                                        onChange={formik.handleChange}
+                                        error={hasFormError(formik, "genero")}
+                                    />  
+
+                                    <Input
+                                        id="peso"
+                                        placeholder="Peso (Kg)"
+                                        type="text"
+                                        label="Peso (Kg)"
+                                        value={formik.values.peso}
+                                        onChange={formik.handleChange}
+                                        error={hasFormError(formik, "peso")}
+                                    />  
+                                </div>
+                                
+                                <div className="container-submit">
+                                    <Button type="submit" variant="contained"> Enviar </Button>
+                                </div>
+                                
+                            </form>
+
+                        </div>
 
                     </div>
                 </Box>

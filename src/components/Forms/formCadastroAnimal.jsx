@@ -7,8 +7,6 @@ import Button from '@mui/material/Button';
 import { listarRFID } from '../../actions/controllers/rfidController';
 import { listarRacas, listarEspecies, cadastrarAnimais } from '../../actions/controllers/animaisController';
 
-import { useNavigate } from "react-router-dom";
-
 import Input from '../Inputs/inputs'
 
 export default function FormCadastroTeste() {
@@ -19,7 +17,6 @@ export default function FormCadastroTeste() {
     const [listaRacas, setListaRacas] = useState();
     const [disabled, setDisabled] = useState(true);
 
-    const navigate = useNavigate();
 
     const hasFormError = (formik, field) => {
         if (!!formik.errors[field] && formik.touched[field]) {

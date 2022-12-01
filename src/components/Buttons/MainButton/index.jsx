@@ -1,9 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
-
-import alimentacao from "./append/btn-alimentacao.png";
-import animais from "./append/btn-animais.png";
-// import pataBtn from "./append/btn-pata.png";
-// import vacinacaoBtn from "./append/btn-vacinacao.png";
+import { useNavigate } from 'react-router-dom'
 
 export default function MainButton(props){
     const modulos = props.modulos;

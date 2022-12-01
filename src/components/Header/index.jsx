@@ -11,7 +11,7 @@ export default function Header() {
             </div>
 
             <div className="header-center">
-                <h4> Vitor Hugo de Souza </h4>
+                <h6> Vitor Hugo de Souza </h6>
             </div>
         </header>
     )
