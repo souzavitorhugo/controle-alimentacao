@@ -63,11 +63,11 @@ export default function PaginaPrincipal(props) {
 
                     <hr/>
 
-                    {/* <Link to="/vacinacao">
+                    <Link to="/vacinacao">
                         <span className="nav-btn"> <img src={vacinacaoBtn} className="" alt="botão do menu inicio"/> Vacinação </span>
-                    </Link> */}
+                    </Link> 
 
-                    {/* <hr/> */}
+                    <hr/>
                 </nav>
 
 
