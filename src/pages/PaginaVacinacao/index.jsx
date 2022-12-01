@@ -82,8 +82,7 @@ export default function PaginaVacinacao(props) {
         },
         validationSchemaVacinacao,
         onSubmit: async values => {
-
-            if(!values.rfid || !values.quantDose || !values.dataAplicacao || !values.tipoVacinacao || !values.emAplicacao ) {
+            if(!values.rfid || !values.quantDose || !values.dataAplicacao || !values.tipoVacinacao ) {
                 window.alert('Você precisa preencher todos os dados do cadastro');
                 return
             }
