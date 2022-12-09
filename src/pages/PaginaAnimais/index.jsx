@@ -820,7 +820,7 @@ export default function PaginaAnimais(props) {
 
                                     <div>
                                         <label className="form-label" htmlFor="dataAbate">
-                                            Data Nascimento
+                                            Data Abate
                                         </label>
 
                                         <input 
