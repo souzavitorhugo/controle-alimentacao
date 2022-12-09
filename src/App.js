@@ -6,6 +6,8 @@ import PaginaPrincipal from './pages/PaginaPrincipal/index';
 import PaginaAlimentacao from './pages/PaginaAlimentacao/index';
 import PaginaAnimais from './pages/PaginaAnimais/index';
 import PaginaVacinacao from './pages/PaginaVacinacao/index';
+import PaginaRaca from './pages/PaginaRaca/index'
+import PaginaEspecie from './pages/PaginaEspecie/index'
 
 
 //Ideia é ter a barra notificando o nome do usuario logado com o logo à esquerda na tela principal
@@ -24,6 +26,14 @@ function App() {
 
         <Route path='/animais'>
           <Route index element={<PaginaAnimais modulo={"animais"}/>}/>
+        </Route>
+
+        <Route path='/racas'>
+          <Route index element={<PaginaRaca modulo={"raca"}/>}/>
+        </Route>
+
+        <Route path='/especies'>
+          <Route index element={<PaginaEspecie modulo={"especie"}/>}/>
         </Route>
 
         <Route path='/alimentacao'>

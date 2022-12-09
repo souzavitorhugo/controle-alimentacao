@@ -11,7 +11,11 @@ import {useFormik} from 'formik';
 import * as Yup from 'yup';
 
 import { listarRFID } from '../../actions/controllers/rfidController';
-import { listarRacas, listarEspecies, cadastrarAnimais, listarAnimais } from '../../actions/controllers/animaisController';
+
+import { listarRacas, listarEspecies, 
+        cadastrarAnimais, listarAnimais, 
+        cadastrarEspecies, cadastrarRacas, 
+        recuperarAnimalPorId, editarAnimais } from '../../actions/controllers/animaisController';
 
 import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";
@@ -19,12 +23,17 @@ import animaisBtn from "./append/btn-animais.png";
 import pataBtn from "./append/btn-pata.png";
 import vacinacaoBtn from "./append/btn-vacinacao.png";
 import Input from '../../components/Inputs/inputs';
+import edit from "./append/edit-img.png";
 
 import './index.css'
 
 export default function PaginaAnimais(props) {
     const [data, setData] = useState();
-    const [open, setOpen] = useState(false);
+    const [openAnimal, setOpenAnimal] = useState(false);
+    const [openAnimalEdicao, setOpenAnimalEdicao] = useState(false);
+
+    const [openEspecie, setOpenEspecie] = useState(false);
+    const [openRaca, setOpenRaca] = useState(false);
 
     const [listaRfids, setListaRfids] = useState();
     const [listaTiposAnimais, setListaTiposAnimais] = useState();
@@ -32,6 +41,7 @@ export default function PaginaAnimais(props) {
     const [tiposAnimais, setTiposAnimais] = useState('');
     const [listaRacas, setListaRacas] = useState();
     const [disabled, setDisabled] = useState(true);
+    const [disabledAbate, setDisabledAbate] = useState(true);
 
     const hasFormError = (formik, field) => {
         if (!!formik.errors[field] && formik.touched[field]) {
@@ -41,9 +51,26 @@ export default function PaginaAnimais(props) {
         return null;
     };
 
-    const handleChangeEspecies = (event) => {
-        setTiposAnimais(event.target.value)
+    const handleClickEdicao = (item) => {
+        let animalId = item.id;
+        recuperarAnimalPorId(animalId, function(resp) {
+            if(!resp.success) return window.alert(resp.reasonPhrase)
 
+            setOpenAnimalEdicao(true);
+            atualizaHookRFID('todos');
+
+            formikAnimalEdicao.values.id = resp.body.id;
+            formikAnimalEdicao.values.rfid = resp.body.codigoRfId;
+            formikAnimalEdicao.values.animal = resp.body.tipoAnimal.id;
+            formikAnimalEdicao.values.raca = resp.body.raca.id;
+            formikAnimalEdicao.values.dataNascimento = resp.body.dataNacimento.split('T')[0];
+            formikAnimalEdicao.values.genero = resp.body.genero === true ? 1 : 0;
+            formikAnimalEdicao.values.peso = resp.body.peso;
+            formikAnimalEdicao.values.abate = resp.body.abat_Morte  === true ? 0 : 1;
+        })
+    }
+
+    const handleChangeEspecies = (event) => {
         listarRacas(function(resp) {
             if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
 
@@ -54,7 +81,12 @@ export default function PaginaAnimais(props) {
         })
     }
 
-    const validationSchema = Yup.object({
+    const handleChangeStatusAnimal = (e) => {
+        if(e.target.value === '1') return setDisabledAbate(true);
+        setDisabledAbate(false);
+    }
+
+    const validationSchemaAnimal = Yup.object({
         rfid: Yup.number().required("Campo obrigatório"),
         animal: Yup.number().required("Campo obrigatório"),
         raca: Yup.number().required("Campo obrigatório"),
@@ -62,7 +94,7 @@ export default function PaginaAnimais(props) {
         peso: Yup.string().required("Campo obrigatório")
     });
 
-    const formik = useFormik({
+    const formikAnimalEdicao = useFormik({
         initialValues: {
             rfid: "",
             animal: "",
@@ -71,7 +103,53 @@ export default function PaginaAnimais(props) {
             genero: "",
             peso: ""
         },
-        validationSchema,
+        validationSchema: validationSchemaAnimal,
+        onSubmit: async values => {
+          const dtoCadastro = {
+            "id": parseInt(values.id),
+            "codigoRfId": parseInt(values.rfid),
+            "codigoTipoAnimal": parseInt(values.animal),
+            "codigoRaca": parseInt(values.raca),
+            "dataNacimento": values.dataNascimento,
+            "peso": parseInt(values.peso),
+            "genero": values.genero == 1 ? true : false,
+            "abat_Morte": values.abate == 1 ? false : true,
+            "dataAbat_Morte": !values.abate ? null : values.dataAbate
+          };
+          
+          try{
+            const data = await editarAnimais(dtoCadastro);
+            if(!!data?.success){
+                handleClose('animalEdicao');
+                atualizaHookData();
+                atualizaHookRFID('ativos');
+                atualizaHookEspecies();
+                window.alert('Animal alterado com sucesso');
+                formikAnimalEdicao.values.rfid = "";
+                formikAnimalEdicao.values.animal = "";
+                formikAnimalEdicao.values.raca = "";
+                formikAnimalEdicao.values.dataNascimento = "";
+                formikAnimalEdicao.values.genero = "";
+                formikAnimalEdicao.values.peso = "";
+            } else {
+                window.alert(data.reasonPhrase);
+            }
+          } catch (err) {
+            window.alert(err.reasonPhrase);
+          }
+        },
+    });
+
+    const formikAnimal = useFormik({
+        initialValues: {
+            rfid: "",
+            animal: "",
+            raca: "",
+            dataNascimento: "",
+            genero: "",
+            peso: ""
+        },
+        validationSchema: validationSchemaAnimal,
         onSubmit: async values => {
           const dtoCadastro = {
             "codigoRfId": parseInt(values.rfid),
@@ -81,21 +159,84 @@ export default function PaginaAnimais(props) {
             "peso": parseInt(values.peso),
             "genero": values.genero == 1 ? true : false
           };
-
           try{
             const data = await cadastrarAnimais(dtoCadastro);
             if(!!data?.success){
-                handleClose();
+                handleClose('animal');
                 atualizaHookData();
-                atualizaHookRFID();
+                atualizaHookRFID('ativos');
                 atualizaHookEspecies();
                 window.alert('Animal cadastrado com sucesso');
-                formik.rfid = "";
-                formik.animal = "";
-                formik.raca = "";
-                formik.dataNascimento = "";
-                formik.genero = "";
-                formik.peso = "";
+                formikAnimal.values.rfid = "";
+                formikAnimal.values.animal = "";
+                formikAnimal.values.raca = "";
+                formikAnimal.values.dataNascimento = "";
+                formikAnimal.values.genero = "";
+                formikAnimal.values.peso = "";
+            } else {
+                window.alert(data.reasonPhrase);
+            }
+          } catch (err) {
+            window.alert(err.reasonPhrase);
+          }
+        },
+    });
+
+    const validationSchemaEspecie = Yup.object({
+        especie: Yup.string().required("Campo obrigatório"),
+    });
+
+    const formikEspecie = useFormik({
+        initialValues: {
+            especie: "",
+        },
+        validationSchema: validationSchemaEspecie,
+        onSubmit: async values => {
+          try{
+            const data = await cadastrarEspecies(values.especie);
+            if(!!data?.success){
+                handleClose('especie');
+                atualizaHookData();
+                atualizaHookRFID('ativos');
+                atualizaHookEspecies();
+                window.alert('Espécie cadastrada com sucesso');
+                formikEspecie.values.especie = "";
+            } else {
+                window.alert(data.reasonPhrase);
+            }
+          } catch (err) {
+            window.alert(err.reasonPhrase);
+          }
+        },
+    });
+
+    const validationSchemaRaca = Yup.object({
+        animal: Yup.number().required("Campo obrigatório"),
+        raca: Yup.string().required("Campo obrigatório"),
+    });
+
+    const formikRaca = useFormik({
+        initialValues: {
+            animal: "",
+            raca: "",
+        },
+        validationSchema: validationSchemaRaca,
+        onSubmit: async values => {
+          const dtoCadastro = {
+            "raca": values.raca,
+            "codigoTipoAnimal": parseInt(values.animal),
+          };
+
+          try{
+            const data = await cadastrarRacas(dtoCadastro);
+            if(!!data?.success){
+                handleClose('raca');
+                atualizaHookData();
+                atualizaHookRFID('ativos');
+                atualizaHookEspecies();
+                window.alert('Raça cadastrada com sucesso');
+                formikRaca.values.animal = "";
+                formikRaca.values.raca = "";
             } else {
                 window.alert(data.reasonPhrase);
             }
@@ -117,14 +258,26 @@ export default function PaginaAnimais(props) {
         });
     }
 
-    const atualizaHookRFID = () => {
-        listarRFID(function(resp) {
-            if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
-            
-            let listaRetornoAPI = resp.body;
-            let listaInativos = listaRetornoAPI.filter(item => item.emUso === false && item.ativo === true);
-            setListaRfids(listaInativos);
-        });
+    const atualizaHookRFID = (tipo) => {
+        if(tipo === 'ativos') {
+            listarRFID(function(resp) {
+                if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+                
+                let listaRetornoAPI = resp.body;
+                let listaInativos = listaRetornoAPI.filter(item => item.emUso === false && item.ativo === true);
+                setListaRfids(listaInativos);
+            });
+        }
+
+        if(tipo === 'todos'){
+            listarRFID(function(resp) {
+                if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+                
+                let listaRetornoAPI = resp.body;
+                setListaRfids(listaRetornoAPI);
+            });
+        }
+        
     }
 
     const atualizaHookEspecies = () => {
@@ -137,7 +290,7 @@ export default function PaginaAnimais(props) {
     useEffect(() => {
         atualizaHookData();
 
-        atualizaHookRFID();
+        atualizaHookRFID('ativos');
 
         atualizaHookEspecies();
     }, [])
@@ -158,12 +311,26 @@ export default function PaginaAnimais(props) {
         document.getElementById("main").style.marginLeft = "0";
     }
 
-    const handleOpen = () => {
-        setOpen(true);
+    const handleOpen = (tipoModal) => {
+        if(tipoModal === 'animal') {
+            setOpenAnimal(true);
+            atualizaHookRFID('ativos')
+        }
+
+        if(tipoModal === 'raca') setOpenRaca(true);
+
+
+        if(tipoModal === 'especie') setOpenEspecie(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleClose = (tipoModal) => {
+        if(tipoModal === 'animal') setOpenAnimal(false);
+
+        if(tipoModal === 'animalEdicao') setOpenAnimalEdicao(false);
+
+        if(tipoModal === 'raca') setOpenRaca(false);
+
+        if(tipoModal === 'especie') setOpenEspecie(false);
     };
 
     return (
@@ -212,7 +379,11 @@ export default function PaginaAnimais(props) {
 
                     <main id="main" className="modulo-container">
 
-                        <Button variant="contained" onClick={handleOpen}> Novo </Button>
+                        <Button style={{marginRight: '5px'}} variant="contained" onClick={() => handleOpen('animal')}> Novo Animal </Button>
+
+                        <Button style={{marginRight: '5px'}} variant="contained" onClick={() => handleOpen('especie')}> Nova Espécie </Button>
+
+                        <Button variant="contained" onClick={() => handleOpen('raca')}> Nova Raça </Button>
 
                         <span className="th-titulo-tabela">Animais Cadastrados</span>
 
@@ -223,6 +394,10 @@ export default function PaginaAnimais(props) {
                                 <tr>
                                     <th className="table-header-border">
                                         Identificador (RFID)
+                                    </th> 
+
+                                    <th className="table-header-border">
+                                        Tipo Animal
                                     </th> 
 
                                     <th className="table-header-border">
@@ -246,11 +421,11 @@ export default function PaginaAnimais(props) {
                                     </th> 
 
                                     <th className="table-header-border">
-                                        Tipo Animal
+                                        Gênero
                                     </th> 
 
                                     <th className="table-header-border">
-                                        Gênero
+                                        Editar
                                     </th> 
                                 </tr>
                                 
@@ -263,6 +438,10 @@ export default function PaginaAnimais(props) {
                                     <tr className="table-tablebody-row" key={item.id}> 
                                         <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
                                             {item.rfid.codigoRFID}
+                                        </td>
+
+                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
+                                            {item.tipoAnimal.tipo}
                                         </td>
 
                                         <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
@@ -286,11 +465,11 @@ export default function PaginaAnimais(props) {
                                         </td>
 
                                         <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.tipoAnimal.tipo}
+                                            {item.genero ? "Macho" : "Fêmea"}
                                         </td>
 
                                         <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.genero ? "Macho" : "Fêmea"}
+                                            <img className="img-editar" onClick={(e) => handleClickEdicao(item)} src={edit} alt="Botao de Edição" />
                                         </td>
                                     </tr>
                                 ))}
@@ -301,7 +480,16 @@ export default function PaginaAnimais(props) {
                             
                         </table>
 
-                        <span className="th-footer-tabela">Quantidade de animais cadastrados:{data?.length}</span>
+                        <span className="th-footer-tabela">Quantidade de animais cadastrados: {data?.length}</span>
+
+                        <Link to="/racas">
+                            <span className="th-footer-tabela hover"> Ir para Lista Raças </span>
+                        </Link>
+                        
+                        <Link to="/especies">
+                            <span className="th-footer-tabela hover"> Ir para Lista Espécies </span>
+                        </Link>
+
                     </main>
                     
                 </section>
@@ -312,8 +500,8 @@ export default function PaginaAnimais(props) {
 
             <Modal
                 id="modal-cadastro-animal"
-                open={open}
-                onClose={handleClose}
+                open={openAnimal}
+                onClose={() => handleClose('animal')}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -325,7 +513,7 @@ export default function PaginaAnimais(props) {
                             
                         <div className="container-form">
 
-                            <form onSubmit={formik.handleSubmit}> 
+                            <form onSubmit={formikAnimal.handleSubmit}> 
 
                                 <div className="form-container-inputs">
                                     <Input
@@ -334,9 +522,9 @@ export default function PaginaAnimais(props) {
                                         placeholder="Escolha o RFID"
                                         type="select"
                                         label="RFID"
-                                        value={formik.values.rfid}
-                                        onChange={formik.handleChange}
-                                        error={hasFormError(formik, "rfid")}
+                                        value={formikAnimal.values.rfid}
+                                        onChange={formikAnimal.handleChange}
+                                        error={hasFormError(formikAnimal, "rfid")}
                                     />
 
                                     <Input
@@ -345,9 +533,9 @@ export default function PaginaAnimais(props) {
                                         placeholder="Escolha o Animal"
                                         type="select"
                                         label="Animal"
-                                        value={formik.values.animal}
-                                        onChange={(e) => {formik.handleChange(e); handleChangeEspecies(e)}}
-                                        error={hasFormError(formik, "animal")}
+                                        value={formikAnimal.values.animal}
+                                        onChange={(e) => {formikAnimal.handleChange(e); handleChangeEspecies(e)}}
+                                        error={hasFormError(formikAnimal, "animal")}
                                     />
 
                                     <Input
@@ -356,9 +544,9 @@ export default function PaginaAnimais(props) {
                                         placeholder="Escolha a Raça"
                                         type="select"
                                         label="Raça"
-                                        value={formik.values.raca}
-                                        onChange={formik.handleChange}
-                                        error={hasFormError(formik, "raca")}
+                                        value={formikAnimal.values.raca}
+                                        onChange={formikAnimal.handleChange}
+                                        error={hasFormError(formikAnimal, "raca")}
                                         disabled={!!disabled}
                                     />
 
@@ -371,9 +559,9 @@ export default function PaginaAnimais(props) {
                                         className="form-control"
                                         id="dataNascimento"
                                         type="date"
-                                        value={formik.values.dataNascimento}
-                                        onChange={formik.handleChange}
-                                        error={hasFormError(formik, "dataNascimento")}
+                                        value={formikAnimal.values.dataNascimento}
+                                        onChange={formikAnimal.handleChange}
+                                        error={hasFormError(formikAnimal, "dataNascimento")}
                                         ></input>
                                     </div>
                                     
@@ -384,9 +572,9 @@ export default function PaginaAnimais(props) {
                                         placeholder="Gênero"
                                         type="select"
                                         label="Gênero"
-                                        value={formik.values.genero}
-                                        onChange={formik.handleChange}
-                                        error={hasFormError(formik, "genero")}
+                                        value={formikAnimal.values.genero}
+                                        onChange={formikAnimal.handleChange}
+                                        error={hasFormError(formikAnimal, "genero")}
                                     />  
 
                                     <Input
@@ -394,9 +582,9 @@ export default function PaginaAnimais(props) {
                                         placeholder="Peso (Kg)"
                                         type="text"
                                         label="Peso (Kg)"
-                                        value={formik.values.peso}
-                                        onChange={formik.handleChange}
-                                        error={hasFormError(formik, "peso")}
+                                        value={formikAnimal.values.peso}
+                                        onChange={formikAnimal.handleChange}
+                                        error={hasFormError(formikAnimal, "peso")}
                                     />  
                                 </div>
                                 
@@ -415,6 +603,253 @@ export default function PaginaAnimais(props) {
             </Modal>
         
             {/* FIM MODAL CADASTRO ANIMAL*/}
+
+            {/* MODAL CADASTRO RACA*/}
+
+            <Modal
+                id="modal-cadastro-animal"
+                open={openRaca}
+                onClose={() => handleClose('raca')}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box id="modal-cadastro-animal-dropshadow" sx={style}>
+                    <div className="modal-container" style={{...style, width: 600}}>
+
+                        <h4 className="titulo-modal"> CADASTRO RACA</h4>
+                            
+                        <div className="container-form">
+
+                            <form onSubmit={formikRaca.handleSubmit}> 
+
+                                <div className="form-container-inputs">
+
+                                    <Input
+                                        id="animal"
+                                        options={listaTiposAnimais?.map(tipoAnimal => ({value: tipoAnimal.id, label: tipoAnimal.tipo}))}
+                                        placeholder="Escolha o Animal"
+                                        type="select"
+                                        label="Animal"
+                                        value={formikRaca.values.animal}
+                                        onChange={formikRaca.handleChange}
+                                        error={hasFormError(formikRaca, "animal")}
+                                    />
+
+                                    <Input
+                                        id="raca"
+                                        placeholder="Raça"
+                                        type="text"
+                                        label="Raça"
+                                        value={formikRaca.values.raca}
+                                        onChange={formikRaca.handleChange}
+                                        error={hasFormError(formikRaca, "raca")}
+                                    />  
+                                    
+                                </div>
+                                
+                                <div className="container-submit">
+                                    <Button type="submit" variant="contained"> Enviar </Button>
+                                </div>
+                                
+                            </form>
+
+                        </div>
+
+                    </div>
+                </Box>
+                
+
+            </Modal>
+        
+            {/* FIM MODAL CADASTRO RACA*/}
+
+
+            {/* MODAL CADASTRO ESPECIE*/}
+
+            <Modal
+                id="modal-cadastro-especie"
+                open={openEspecie}
+                onClose={() => handleClose('especie')}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box id="modal-cadastro-especie-dropshadow" sx={style}>
+                    <div className="modal-container" style={{...style, width: 600}}>
+
+                        <h4 className="titulo-modal"> CADASTRO ESPECIE </h4>
+                            
+                        <div className="container-form">
+
+                            <form onSubmit={formikEspecie.handleSubmit}> 
+
+                                <div className="">
+
+                                    <Input
+                                        id="especie"
+                                        placeholder="Espécie"
+                                        type="text"
+                                        label="Nome Espécie"
+                                        value={formikEspecie.values.especie}
+                                        onChange={formikEspecie.handleChange}
+                                        error={hasFormError(formikEspecie, "especie")}
+                                    />  
+
+                                </div>
+                                
+                                <div className="container-submit">
+                                    <Button type="submit" variant="contained"> Enviar </Button>
+                                </div>
+                                
+                            </form>
+
+                        </div>
+
+                    </div>
+                </Box>
+                
+
+            </Modal>
+        
+            {/* FIM MODAL CADASTRO ESPECIE*/}
+
+
+            {/* MODAL CADASTRO EDICAO ANIMAL */}
+
+            <Modal
+                id="modal-cadastro-animal-edicao"
+                open={openAnimalEdicao}
+                onClose={() => handleClose('animalEdicao')}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box id="modal-cadastro-animal-dropshadow" sx={style}>
+                    <div className="modal-container" style={{...style, width: 600}}>
+
+                        <h4 className="titulo-modal"> Edição </h4>
+                            
+                        <div className="container-form">
+
+                            <form onSubmit={formikAnimalEdicao.handleSubmit}> 
+
+                                <div className="form-container-inputs">
+                                    <Input
+                                        id="rfid"
+                                        options={listaRfids?.map(rfid => ({value: rfid.id, label: rfid.codigoRFID}))}
+                                        placeholder="Escolha o RFID"
+                                        type="select"
+                                        label="RFID"
+                                        value={formikAnimalEdicao.values.rfid}
+                                        onChange={formikAnimalEdicao.handleChange}
+                                        error={hasFormError(formikAnimalEdicao, "rfid")}
+                                        disabled={true}
+                                    />
+
+                                    <Input
+                                        id="animal"
+                                        options={listaTiposAnimais?.map(tipoAnimal => ({value: tipoAnimal.id, label: tipoAnimal.tipo}))}
+                                        placeholder="Escolha o Animal"
+                                        type="select"
+                                        label="Animal"
+                                        value={formikAnimalEdicao.values.animal}
+                                        onChange={(e) => {formikAnimalEdicao.handleChange(e); handleChangeEspecies(e)}}
+                                        error={hasFormError(formikAnimalEdicao, "animal")}
+                                    />
+
+                                    <Input
+                                        id="raca"
+                                        options={listaRacas?.map(raca => ({value: raca.id, label: raca.raca}))}
+                                        placeholder="Escolha a Raça"
+                                        type="select"
+                                        label="Raça"
+                                        value={formikAnimalEdicao.values.raca}
+                                        onChange={formikAnimalEdicao.handleChange}
+                                        error={hasFormError(formikAnimalEdicao, "raca")}
+                                        disabled={!!disabled}
+                                    />
+
+                                    <div>
+                                        <label className="form-label" htmlFor="dataNascimento">
+                                            Data Nascimento
+                                        </label>
+
+                                        <input 
+                                        className="form-control"
+                                        id="dataNascimento"
+                                        type="date"
+                                        value={formikAnimalEdicao.values.dataNascimento}
+                                        onChange={formikAnimalEdicao.handleChange}
+                                        error={hasFormError(formikAnimalEdicao, "dataNascimento")}
+                                        ></input>
+                                    </div>
+                                    
+                                    
+                                    <Input
+                                        id="genero"
+                                        options={[{value: 1, label: 'Macho'}, {value: 0, label: 'Fêmea'}]}
+                                        placeholder="Gênero"
+                                        type="select"
+                                        label="Gênero"
+                                        value={formikAnimalEdicao.values.genero}
+                                        onChange={formikAnimalEdicao.handleChange}
+                                        error={hasFormError(formikAnimalEdicao, "genero")}
+                                    />  
+
+                                    <Input
+                                        id="peso"
+                                        placeholder="Peso (Kg)"
+                                        type="text"
+                                        label="Peso (Kg)"
+                                        value={formikAnimalEdicao.values.peso}
+                                        onChange={formikAnimalEdicao.handleChange}
+                                        error={hasFormError(formikAnimalEdicao, "peso")}
+                                    />  
+
+                                    <Input
+                                        id="abate"
+                                        options={[{value: 1, label: 'Vivo'}, {value: 0, label: 'Morto'}]}
+                                        placeholder="Status Animal"
+                                        type="select"
+                                        label="Status Animal"
+                                        value={formikAnimalEdicao.values.abate}
+                                        onChange={(e) => {formikAnimalEdicao.handleChange(e); handleChangeStatusAnimal(e)}}
+                                        error={hasFormError(formikAnimalEdicao, "abate")}
+                                    />  
+
+                                    <div>
+                                        <label className="form-label" htmlFor="dataAbate">
+                                            Data Nascimento
+                                        </label>
+
+                                        <input 
+                                            className="form-control"
+                                            id="dataAbate"
+                                            type="date"
+                                            value={formikAnimalEdicao.values.dataAbate}
+                                            onChange={formikAnimalEdicao.handleChange}
+                                            error={hasFormError(formikAnimalEdicao, "dataAbate")}
+                                            disabled={!!disabledAbate}
+                                        ></input>
+                                    </div>
+                                </div>
+                                
+                                <div className="container-submit">
+                                    <Button type="submit" variant="contained"> Enviar </Button>
+                                </div>
+                                
+                            </form>
+
+                        </div>
+
+                    </div>
+                </Box>
+                
+
+            </Modal>
+        
+            {/* FIM MODAL CADASTRO EDICAO ANIMAL*/}
 
         </Fragment>
     )

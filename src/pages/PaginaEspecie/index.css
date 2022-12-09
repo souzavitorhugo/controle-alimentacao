@@ -131,11 +131,6 @@ table {
 .th-footer-tabela{
     font-size: 0.85rem;
     color: #b6b6b6;
-    display: block;
-}
-
-.th-footer-tabela.hover:hover{
-    color: black;
 }
 
 .container-table{

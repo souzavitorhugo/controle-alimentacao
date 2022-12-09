@@ -283,10 +283,6 @@ export default function PaginaVacinacao(props) {
                                         Data Primeira Dose
                                     </th> 
 
-                                    <th className="table-header-border">
-                                        Data Última aplicação
-                                    </th> 
-
                                 </tr>
                                 
                                 
@@ -314,10 +310,6 @@ export default function PaginaVacinacao(props) {
 
                                         <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
                                             {item.dataInicioAplicacao ? item.dataInicioAplicacao.split('T')[0] : "-"}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.dataUltimaDoseAplicada ? item.dataUltimaDoseAplicada.split('T')[0] : "-"}
                                         </td>
 
                                     </tr>
