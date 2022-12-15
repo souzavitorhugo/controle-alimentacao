@@ -1,7 +1,12 @@
 import logo from './logo.svg';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 
 import './App.css';
+
+import Navigator from './components/Navigation/index';
+import Header from './components/Header/index';
+import burguerImg from "./append/burguer-menu.png";
+
 import PaginaPrincipal from './pages/PaginaPrincipal/index';
 import PaginaAlimentacao from './pages/PaginaAlimentacao/index';
 import PaginaAnimais from './pages/PaginaAnimais/index';
@@ -9,45 +14,41 @@ import PaginaVacinacao from './pages/PaginaVacinacao/index';
 import PaginaRaca from './pages/PaginaRaca/index'
 import PaginaEspecie from './pages/PaginaEspecie/index'
 
-
-//Ideia é ter a barra notificando o nome do usuario logado com o logo à esquerda na tela principal
-//abaixo da logo, vem o collapse de navegação 
-
 function App() {
-  
+
+  const openNav = () => {
+    let screenWidth = window.screen.width;
+
+    if (screenWidth < 450) {
+      document.getElementById("sidenav").style.width = "100vw";
+    } else {
+      document.getElementById("sidenav").style.width = "200px";
+      document.getElementById("main").style.marginLeft = "150px";
+    }
+  }
+
   return (
-    <BrowserRouter>
+    <div className="page-container">
+      <Header />
 
-      <Routes>
+      <Navigator />
 
-        <Route path='/'>
-          <Route index element={<PaginaPrincipal modulo={"inicio"}/>}/>
-        </Route>
+      <section className="main-container">
 
-        <Route path='/animais'>
-          <Route index element={<PaginaAnimais modulo={"animais"}/>}/>
-        </Route>
+        <aside className="container-btn-menu">
+          <div className="container-img">
+            <img src={burguerImg} className="burguer-img" alt="botão do menu" onClick={openNav} />
+          </div>
+        </aside>
 
-        <Route path='/racas'>
-          <Route index element={<PaginaRaca modulo={"raca"}/>}/>
-        </Route>
+        <main id="main" className="modulo-container">
+          <Outlet/>
+        </main>
 
-        <Route path='/especies'>
-          <Route index element={<PaginaEspecie modulo={"especie"}/>}/>
-        </Route>
-
-        <Route path='/alimentacao'>
-          <Route index element={<PaginaAlimentacao modulo={"alimentacao"}/>}/>
-        </Route>
-
-        <Route path='/vacinacao'>
-          <Route index element={<PaginaVacinacao modulo={"vacinacao"}/>}/>
-        </Route>
-
-      </Routes>
-                  
-    </BrowserRouter>
+      </section>
+    </div>
   );
+
 }
 
 export default App;

@@ -1,3 +1,12 @@
+tr{
+  text-align: center; 
+}
+
+table {
+  border-spacing: 0;
+  background: white;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +20,50 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+thead{
+  width: 100vw;
+}
+
+.main-container{
+  display: grid;
+  grid-template-columns: 50px auto;
+}
+
+.page-container{
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 10vh auto;
+}
+
+.container-table{
+  margin-top: 15px;
+  width: 100%;
+}
+
+.modulo-container{
+  padding: 10px 25px 0 25px;
+}
+
+.container-btn-menu{
+  position: relative;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+
+  border-right: 1px solid #C1C1C3;
+}
+
+@media screen and (max-width: 450px){
+  .main-container{
+      display: grid;
+      grid-template-columns: 50px auto;
+  }
+
+  .page-container{
+      display: grid;
+      grid-template-columns: auto;
+      grid-template-rows: 128px auto;
+  }
+}
+

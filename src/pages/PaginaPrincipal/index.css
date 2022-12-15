@@ -2,12 +2,6 @@ a {
     text-decoration: none;
 }
 
-.page-container{
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: 10vh auto;
-}
-
 /* The side navigation menu */
 .sidenav {
     height: 100%; /* 100% Full-height */
@@ -66,29 +60,12 @@ a {
     align-items: center;
 }
 
-.container-btn-menu{
-    display: flex;
-    flex-direction: column;
-
-    border-right: 1px solid #C1C1C3;
-}
-
 .burguer-img {
     cursor: pointer;
     transform: rotate(90deg);
 
     padding: 5px;
     max-width: 35px;
-}
-
-.main-container{
-    display: grid;
-    grid-template-columns: 50px auto;
-    height: 90vh;
-}
-
-.modulo-container{
-    padding: 10px 25px 0 25px;
 }
 
 .btn-menu{
@@ -128,17 +105,6 @@ a {
 }
 
 @media screen and (max-width: 450px){
-    .main-container{
-        display: grid;
-        grid-template-columns: 50px auto;
-    }
-
-    .page-container{
-        display: grid;
-        grid-template-columns: auto;
-        grid-template-rows: 128px auto;
-    }
-
     .btn-container{
         justify-content: center;
     }

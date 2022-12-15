@@ -22,7 +22,10 @@ export default function ComboRacaTipoAnimal() {
     };
 
     const handleChangeEspecies = (event) => {
-        setTiposAnimais(event.target.value)
+        setTiposAnimais(event.target.value);
+
+        const DadosListaRaca = callListarRacas();
+
 
         listarRacas(function(resp) {
             if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
@@ -32,6 +35,15 @@ export default function ComboRacaTipoAnimal() {
             setListaRacas(listaFiltrada);
         })
 
+    }
+
+    const callListarRacas = async () => {
+        try {
+            const data = await listarRacas();
+            if(!!data) debugger;
+        } catch(err) {
+            
+        }
     }
 
     useEffect(() => {

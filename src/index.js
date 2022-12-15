@@ -4,10 +4,53 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom';
+
+import PaginaPrincipal from './pages/PaginaPrincipal/index';
+import PaginaAnimais from './pages/PaginaAnimais/index';
+import PaginaAlimentacao from './pages/PaginaAlimentacao/index';
+import PaginaVacinacao from './pages/PaginaVacinacao/index';
+import PaginaRaca from './pages/PaginaRaca/index';
+import PaginaEspecie from './pages/PaginaEspecie/index';
+
+
+const router = createBrowserRouter([
+  {
+    element: <App/>,
+    children: [
+      {
+        path: "/",
+        element: <PaginaPrincipal/>
+      },
+      {
+        path: "/animais",
+        element: <PaginaAnimais/>
+      },
+      {
+        path: "/alimentacao",
+        element: <PaginaAlimentacao/>
+      },
+      {
+        path: "/vacinacao",
+        element: <PaginaVacinacao/>
+      },
+      {
+        path: "/racas",
+        element: <PaginaRaca/>
+      },
+      {
+        path: "/especies",
+        element: <PaginaEspecie/>
+      }
+    ]
+  }
+])
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

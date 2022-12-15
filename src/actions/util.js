@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const API_URL = "https://devcontroleveterinario.azurewebsites.net";
 
 export const defaults = {
@@ -14,4 +16,11 @@ export function srid() {
     }  
     return `${s4()}-${s4()}-${s4()}`;
   }
+
+export const AxiosInstance = axios.create({
+  baseURL: 'https://devcontroleveterinario.azurewebsites.net',
+  timeout: 1000,
+  headers: {'Content-Type': 'application/json', 'charset': 'utf-8'}
+})
+
 

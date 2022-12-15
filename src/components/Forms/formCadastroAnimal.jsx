@@ -81,7 +81,7 @@ export default function FormCadastroTeste() {
             "peso": parseInt(values.peso),
             "genero": values.genero == 1 ? true : false
           };
-
+          debugger;
           try{
             const data = await cadastrarAnimais(dtoCadastro);
             if(!!data?.success){

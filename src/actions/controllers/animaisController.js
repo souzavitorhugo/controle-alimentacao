@@ -1,47 +1,36 @@
-import {API_URL, defaults} from '../util';
+import {API_URL, defaults, AxiosInstance} from '../util';
 
 import axios from 'axios';
 
-export async function listarAnimais(callback) {
-    axios.get(`${API_URL}/api/Animal/ListarAnimais`)
-        .then(function(response) {
-            callback(response.data);
-        })
-        .catch(function(response){
-            callback(response);
+export const listarAnimais = () => {
+    return AxiosInstance.get("/api/Animal/ListarAnimais")
+        .then((resp) => {
+            return resp.data.body
         })
 }
 
-export async function listarRacas(callback) {
-    axios.get(`${API_URL}/api/Animal/ListarRacas`)
-        .then(function(response) {
-            callback(response.data);
-        })
-        .catch(function(response){
-            callback(response);
+export const listarRacas = () => {
+    return AxiosInstance.get("/api/Animal/ListarRacas")
+        .then((resp) => {
+            return resp.data.body
         })
 }
 
-export async function listarEspecies(callback) {
-    axios.get(`${API_URL}/api/Animal/ListarEspecies`)
-        .then(function(response) {
-            callback(response.data);
-        })
-        .catch(function(response){
-            callback(response);
+export const listarEspecies = async () => {
+    return AxiosInstance.get("/api/Animal/ListarEspecies")
+        .then((resp) => {
+            return resp.data.body
         })
 }
 
-export async function cadastrarAnimais(dto, callback){
-    const response = await fetch(`${API_URL}/api/Animal/CadastrarAnimais`, {
-        method: 'POST',
-        headers: defaults.headers,
-        body: JSON.stringify(dto)
-    });
+export const cadastrarAnimais = async (dto) => {
 
-    const data = await response.json();
-
-    return data;
+    return AxiosInstance.post("/api/Animal/CadastrarAnimais", {
+        body: dto
+    })
+    .then((resp) => {
+       return resp.data        
+    })
 }
 
 export async function cadastrarEspecies(dto, callback){

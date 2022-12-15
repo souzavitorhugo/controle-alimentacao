@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useState} from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import { Link } from 'react-router-dom'
 
@@ -15,9 +15,9 @@ import burguerImg from "./append/burguer-menu.png";
 import alimentacaoBtn from "./append/btn-alimentacao.png";
 import animaisBtn from "./append/btn-animais.png";
 import pataBtn from "./append/btn-pata.png";
-import vacinacaoBtn  from "./append/btn-vacinacao.png";
+import vacinacaoBtn from "./append/btn-vacinacao.png";
 
-import {useFormik} from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 import { listarRFID } from '../../actions/controllers/rfidController';
@@ -34,17 +34,17 @@ export default function PaginaVacinacao(props) {
 
     const hasFormErrorVacinacao = (formik, field) => {
         if (!!formik.errors[field] && formik.touched[field]) {
-          return formik.errors[field];
+            return formik.errors[field];
         }
-      
+
         return null;
     };
 
     const hasFormErrorAplicacao = (formik, field) => {
         if (!!formik.errors[field] && formik.touched[field]) {
-          return formik.errors[field];
+            return formik.errors[field];
         }
-      
+
         return null;
     };
 
@@ -69,7 +69,7 @@ export default function PaginaVacinacao(props) {
     useEffect(() => {
         atualizaHookVacinacoes();
 
-        atualizaHookRFIDs();        
+        atualizaHookRFIDs();
     }, [])
 
     const formikVacinacao = useFormik({
@@ -82,7 +82,7 @@ export default function PaginaVacinacao(props) {
         },
         validationSchemaVacinacao,
         onSubmit: async values => {
-            if(!values.rfid || !values.quantDose || !values.dataAplicacao || !values.tipoVacinacao ) {
+            if (!values.rfid || !values.quantDose || !values.dataAplicacao || !values.tipoVacinacao) {
                 window.alert('Você precisa preencher todos os dados do cadastro');
                 return
             }
@@ -95,9 +95,9 @@ export default function PaginaVacinacao(props) {
                 "emAplicacao": false
             };
 
-            try{
+            try {
                 const data = await cadastrarVacinas(dtoCadastroVacinas);
-                if(!!data?.success){
+                if (!!data?.success) {
                     handleCloseVacina();
                     atualizaHookVacinacoes();
                     formikVacinacao.values.dataAplicacao = "";
@@ -120,8 +120,8 @@ export default function PaginaVacinacao(props) {
         },
         validationSchemaAplicacao,
         onSubmit: async values => {
-            
-            if(!values.dataUltimaDoseAplicada || !values.id || !values.quantDoseAplicada) {
+
+            if (!values.dataUltimaDoseAplicada || !values.id || !values.quantDoseAplicada) {
                 window.alert('Você precisa preencher todos os dados do cadastro');
                 return
             }
@@ -132,24 +132,24 @@ export default function PaginaVacinacao(props) {
                 "quantDoseAplicada": parseInt(values.quantDoseAplicada),
             };
 
-          try{
+            try {
 
-            const data = await aplicarVacina(dtoCadastro);
-            
-            if(!!data?.success){
-                handleCloseCadastroAplicacao();
-                atualizaHookVacinacoes();
-                window.alert('Vacina aplicada com sucesso');
-                formikAplicacao.values.id = ""
-                formikAplicacao.values.dataUltimaDoseAplicada = ""
-                formikAplicacao.values.quantDoseAplicada = ""
-            } else {
-                window.alert(data.reasonPhrase);
+                const data = await aplicarVacina(dtoCadastro);
+
+                if (!!data?.success) {
+                    handleCloseCadastroAplicacao();
+                    atualizaHookVacinacoes();
+                    window.alert('Vacina aplicada com sucesso');
+                    formikAplicacao.values.id = ""
+                    formikAplicacao.values.dataUltimaDoseAplicada = ""
+                    formikAplicacao.values.quantDoseAplicada = ""
+                } else {
+                    window.alert(data.reasonPhrase);
+                }
+
+            } catch (err) {
+                window.alert(err.reasonPhrase);
             }
-
-          } catch (err) {
-            window.alert(err.reasonPhrase);
-          }
         },
     });
 
@@ -157,14 +157,14 @@ export default function PaginaVacinacao(props) {
     const openNav = (a, b, c, d, e) => {
         let screenWidth = window.screen.width;
 
-        if(screenWidth < 450) {
+        if (screenWidth < 450) {
             document.getElementById("sidenav").style.width = "100vw";
         } else {
             document.getElementById("sidenav").style.width = "200px";
             document.getElementById("main").style.marginLeft = "150px";
         }
     }
-      
+
     const closeNav = () => {
         document.getElementById("sidenav").style.width = "0";
         document.getElementById("main").style.marginLeft = "0";
@@ -187,8 +187,8 @@ export default function PaginaVacinacao(props) {
     };
 
     const atualizaHookVacinacoes = () => {
-        listarVacinacoes(function(resp) {
-            if(!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
+        listarVacinacoes(function (resp) {
+            if (!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
             setData(resp.body);
             setVacinas(resp.body);
 
@@ -196,9 +196,9 @@ export default function PaginaVacinacao(props) {
     }
 
     const atualizaHookRFIDs = () => {
-        listarRFID(function(resp) {
-            if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
-            
+        listarRFID(function (resp) {
+            if (!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+
             let listaRetornoAPI = resp.body;
             let listaCadastrados = listaRetornoAPI.filter(item => item.emUso === true && item.ativo === true);
             setListaRfids(listaCadastrados);
@@ -208,125 +208,76 @@ export default function PaginaVacinacao(props) {
     return (
         <Fragment>
 
-            <div className="page-container">
+            <Button variant="contained" onClick={handleOpenCadastroVacina}> Nova Vacina </Button>
 
-                <Header/>
+            <Button style={{ marginLeft: 5 }} variant="contained" onClick={handleOpenCadastroAplicacao}> Nova Aplicação </Button>
 
-                <nav id="sidenav" className="sidenav">
+            <span className="th-titulo-tabela">Animais Cadastrados</span>
 
-                    <span className="closebtn" onClick={closeNav}>&times;</span>
+            <table className="container-table">
 
-                    <Link to="/">
-                        <span className="nav-btn"> <img src={pataBtn} className="" alt="botão do menu inicio"/> Início </span>
-                    </Link>
+                <thead>
 
-                    <hr/>
+                    <tr>
+                        <th className="table-header-border">
+                            Identificador (RFID)
+                        </th>
 
-                    <Link to="/animais">
-                        <span className="nav-btn"> <img src={animaisBtn} className="" alt="botão do menu animais"/> Animais </span>
-                    </Link>
+                        <th className="table-header-border">
+                            Vacina
+                        </th>
 
-                    <hr/>
+                        <th className="table-header-border">
+                            Quant. Aplicações
+                        </th>
 
-                    <Link to="/alimentacao">
-                        <span className="nav-btn"> <img src={alimentacaoBtn} className="" alt="botão do menu inicio"/> Alimentação </span>
-                    </Link>
+                        <th className="table-header-border">
+                            Quant. Doses
+                        </th>
 
-                    <hr/>
+                        <th className="table-header-border">
+                            Data Primeira Dose
+                        </th>
 
-                    <Link to="/vacinacao">
-                        <span className="nav-btn"> <img src={vacinacaoBtn} className="" alt="botão do menu inicio"/> Vacinação </span>
-                    </Link>
+                    </tr>
 
-                    <hr/>
 
-                </nav>
+                </thead>
 
-                <section className="main-container">
+                <tbody>
+                    {data?.map((item, index, arr) => (
 
-                    <aside className="container-btn-menu">
-                        <div className="container-img">
-                            <img src={burguerImg} className="burguer-img" alt="botão do menu" onClick={openNav}/>
-                        </div>
-                    </aside>
+                        <tr className="table-tablebody-row" key={item.id}>
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.rfid.codigoRFID}
+                            </td>
 
-                    <main id="main" className="modulo-container">
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.tipoVacinacao}
+                            </td>
 
-                        <Button variant="contained" onClick={handleOpenCadastroVacina}> Nova Vacina </Button>
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.quantDoseAplicada}
+                            </td>
 
-                        <Button style={{marginLeft: 5}}variant="contained" onClick={handleOpenCadastroAplicacao}> Nova Aplicação </Button>
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.quantDose}
+                            </td>
 
-                        <span className="th-titulo-tabela">Animais Cadastrados</span>
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.dataInicioAplicacao ? item.dataInicioAplicacao.split('T')[0] : "-"}
+                            </td>
 
-                        <table className="container-table">
-                                
-                            <thead>
-                    
-                                <tr>
-                                    <th className="table-header-border">
-                                        Identificador (RFID)
-                                    </th> 
+                        </tr>
+                    ))}
 
-                                    <th className="table-header-border">
-                                        Vacina
-                                    </th> 
 
-                                    <th className="table-header-border">
-                                        Quant. Aplicações
-                                    </th>
+                </tbody>
 
-                                    <th className="table-header-border">
-                                        Quant. Doses
-                                    </th> 
 
-                                    <th className="table-header-border">
-                                        Data Primeira Dose
-                                    </th> 
+            </table>
 
-                                </tr>
-                                
-                                
-                            </thead>
-
-                            <tbody>
-                                {data?.map((item, index, arr) => (
-                                
-                                    <tr className="table-tablebody-row" key={item.id}> 
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.rfid.codigoRFID}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.tipoVacinacao}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.quantDoseAplicada}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.quantDose}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.dataInicioAplicacao ? item.dataInicioAplicacao.split('T')[0] : "-"}
-                                        </td>
-
-                                    </tr>
-                                ))}
-
-                                
-                            </tbody>
-
-                            
-                        </table>
-
-                        <span className="th-footer-tabela">Quantidade de animais cadastrados:{data?.length}</span>
-                    </main>
-                    
-                </section>
-
-            </div>
+            <span className="th-footer-tabela">Quantidade de animais cadastrados:{data?.length}</span>
 
             {/* MODAL CADASTRO VACINA*/}
 
@@ -339,20 +290,20 @@ export default function PaginaVacinacao(props) {
             >
 
                 <Box id="modal-cadastro-animal-dropshadow" sx={style}>
-                    <div className="modal-container" style={{...style, width: 600}}>
+                    <div className="modal-container" style={{ ...style, width: 600 }}>
 
                         <h4 className="titulo-modal"> CADASTRO </h4>
-                            
+
                         {/* <FormCadastroVacina/> */}
 
                         <div className="container-form">
 
-                            <form onSubmit={formikVacinacao.handleSubmit}> 
+                            <form onSubmit={formikVacinacao.handleSubmit}>
 
                                 <div className="form-container-inputs">
                                     <Input
                                         id="rfid"
-                                        options={listaRfids?.map(rfid => ({value: rfid.id, label: rfid.codigoRFID}))}
+                                        options={listaRfids?.map(rfid => ({ value: rfid.id, label: rfid.codigoRFID }))}
                                         placeholder="Escolha o RFID"
                                         type="select"
                                         label="RFID"
@@ -366,16 +317,16 @@ export default function PaginaVacinacao(props) {
                                             Data Primeira Aplicação
                                         </label>
 
-                                        <input 
-                                        className="form-control"
-                                        id="dataAplicacao"
-                                        type="date"
-                                        value={formikVacinacao.values.dataAplicacao}
-                                        onChange={formikVacinacao.handleChange}
+                                        <input
+                                            className="form-control"
+                                            id="dataAplicacao"
+                                            type="date"
+                                            value={formikVacinacao.values.dataAplicacao}
+                                            onChange={formikVacinacao.handleChange}
                                         ></input>
                                     </div>
-                                    
-                                    
+
+
                                     <Input
                                         id="quantDose"
                                         placeholder="0"
@@ -384,7 +335,7 @@ export default function PaginaVacinacao(props) {
                                         value={formikVacinacao.values.quantDose}
                                         onChange={formikVacinacao.handleChange}
                                         error={hasFormErrorVacinacao(formikVacinacao, "quantDose")}
-                                    />  
+                                    />
 
                                     <Input
                                         id="tipoVacinacao"
@@ -394,23 +345,23 @@ export default function PaginaVacinacao(props) {
                                         value={formikVacinacao.values.tipoVacinacao}
                                         onChange={formikVacinacao.handleChange}
                                         error={hasFormErrorVacinacao(formikVacinacao, "tipoVacinacao")}
-                                    />  
+                                    />
                                 </div>
-                                
+
                                 <div className="container-submit">
                                     <Button type="submit" variant="contained"> Enviar </Button>
                                 </div>
-                                
+
                             </form>
 
                         </div>
 
                     </div>
                 </Box>
-                
+
 
             </Modal>
-        
+
             {/* FIM MODAL CADASTRO VACINA*/}
 
             {/* MODAL CADASTRO APLICACAO VACINA*/}
@@ -424,7 +375,7 @@ export default function PaginaVacinacao(props) {
             >
 
                 <Box id="modal-cadastro-aplicacao-dropshadow" sx={style}>
-                    <div className="modal-container" style={{...style, width: 600}}>
+                    <div className="modal-container" style={{ ...style, width: 600 }}>
 
                         <h4 className="titulo-modal"> CADASTRO </h4>
 
@@ -432,12 +383,12 @@ export default function PaginaVacinacao(props) {
 
                         <div className="container-form">
 
-                            <form onSubmit={formikAplicacao.handleSubmit}> 
+                            <form onSubmit={formikAplicacao.handleSubmit}>
 
                                 <div className="form-container-inputs">
                                     <Input
                                         id="id"
-                                        options={vacinas?.map(vacina => ({value: vacina.id, label: vacina.tipoVacinacao}))}
+                                        options={vacinas?.map(vacina => ({ value: vacina.id, label: vacina.tipoVacinacao }))}
                                         placeholder="Escolha a Vacina"
                                         type="select"
                                         label="Vacina"
@@ -451,7 +402,7 @@ export default function PaginaVacinacao(props) {
                                             Data Dose
                                         </label>
 
-                                        <input 
+                                        <input
                                             className="form-control"
                                             id="dataUltimaDoseAplicada"
                                             type="date"
@@ -460,8 +411,8 @@ export default function PaginaVacinacao(props) {
                                         ></input>
 
                                     </div>
-                                    
-                                    
+
+
                                     <Input
                                         id="quantDoseAplicada"
                                         placeholder="0"
@@ -470,24 +421,24 @@ export default function PaginaVacinacao(props) {
                                         value={formikAplicacao.values.quantDose}
                                         onChange={formikAplicacao.handleChange}
                                         error={hasFormErrorAplicacao(formikAplicacao, "quantDose")}
-                                    />  
+                                    />
 
                                 </div>
-                                
+
                                 <div className="container-submit">
                                     <Button type="submit" variant="contained"> Enviar </Button>
                                 </div>
-                                
+
                             </form>
 
                         </div>
 
                     </div>
                 </Box>
-                
+
 
             </Modal>
-        
+
             {/* FIM MODAL CADASTRO APLICACAO VACINA*/}
 
         </Fragment>

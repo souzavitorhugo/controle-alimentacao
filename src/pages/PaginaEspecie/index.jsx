@@ -1,24 +1,15 @@
-import {Fragment, useEffect, useState} from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
-import { Link } from 'react-router-dom'
-import Header from '../../components/Header/index';
 
-import {useFormik} from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 
 import { listarEspecies, editarEspecies, recuperarEspeciePorId } from '../../actions/controllers/animaisController';
-import edit from "./append/edit-img.png";
+import edit from "../../append/edit-img.png";
 import Input from '../../components/Inputs/inputs';
-
-
-import burguerImg from "./append/burguer-menu.png";
-import alimentacaoBtn from "./append/btn-alimentacao.png";
-import animaisBtn from "./append/btn-animais.png";
-import pataBtn from "./append/btn-pata.png";
-import vacinacaoBtn from "./append/btn-vacinacao.png";
 
 import './index.css'
 
@@ -29,27 +20,26 @@ export default function PaginaEspecie(props) {
         bgcolor: 'background.paper',
         boxShadow: 10,
     };
-    
+
     const hasFormError = (formik, field) => {
         if (!!formik.errors[field] && formik.touched[field]) {
-          return formik.errors[field];
+            return formik.errors[field];
         }
-      
+
         return null;
     };
 
     const atualizaHookData = () => {
-        listarEspecies(function(resp) {
-            debugger
-            if(!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
+        listarEspecies(function (resp) {
+            if (!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
             setData(resp.body);
         });
     }
 
     const handleClickEdicao = (item) => {
         let especieId = item.id;
-        recuperarEspeciePorId(especieId, function(resp) {
-            if(!resp.success) return window.alert(resp.reasonPhrase)
+        recuperarEspeciePorId(especieId, function (resp) {
+            if (!resp.success) return window.alert(resp.reasonPhrase)
 
             setOpenEdicao(true);
 
@@ -72,19 +62,19 @@ export default function PaginaEspecie(props) {
         },
         validationSchema: validationSchemaEspecie,
         onSubmit: async values => {
-          try{
-            const data = await editarEspecies({"tipo": values.especie, "id": values.id});
-            if(!!data?.success){
-                handleClose('especie');
-                atualizaHookData();
-                window.alert('Espécie editada com sucesso');
-                formikEspecie.values.especie = "";
-            } else {
-                window.alert(data.reasonPhrase);
+            try {
+                const data = await editarEspecies({ "tipo": values.especie, "id": values.id });
+                if (!!data?.success) {
+                    handleClose('especie');
+                    atualizaHookData();
+                    window.alert('Espécie editada com sucesso');
+                    formikEspecie.values.especie = "";
+                } else {
+                    window.alert(data.reasonPhrase);
+                }
+            } catch (err) {
+                window.alert(err.reasonPhrase);
             }
-          } catch (err) {
-            window.alert(err.reasonPhrase);
-          }
         },
     });
 
@@ -95,14 +85,14 @@ export default function PaginaEspecie(props) {
     const openNav = (a, b, c, d, e) => {
         let screenWidth = window.screen.width;
 
-        if(screenWidth < 450) {
+        if (screenWidth < 450) {
             document.getElementById("sidenav").style.width = "100vw";
         } else {
             document.getElementById("sidenav").style.width = "200px";
             document.getElementById("main").style.marginLeft = "150px";
         }
     }
-      
+
     const closeNav = () => {
         document.getElementById("sidenav").style.width = "0";
         document.getElementById("main").style.marginLeft = "0";
@@ -111,106 +101,58 @@ export default function PaginaEspecie(props) {
     return (
         <Fragment>
 
-            <div className="page-container">
+            <span className="th-titulo-tabela">Espécies Cadastrados</span>
 
-                <Header/>
+            <table className="container-table">
 
-                <nav id="sidenav" className="sidenav">
+                <thead>
 
-                    <span className="closebtn" onClick={closeNav}>&times;</span>
+                    <tr>
+                        <th className="table-header-border">
+                            Identificador
+                        </th>
 
-                    <Link to="/">
-                        <span className="nav-btn"> <img src={pataBtn} className="" alt="botão do menu inicio"/> Início </span>
-                    </Link>
+                        <th className="table-header-border">
+                            Nome
+                        </th>
 
-                    <hr/>
+                        <th className="table-header-border">
+                            Editar
+                        </th>
 
-                    <Link to="/animais">
-                        <span className="nav-btn"> <img src={animaisBtn} className="" alt="botão do menu animais"/> Animais </span>
-                    </Link>
+                    </tr>
 
-                    <hr/>
 
-                    <Link to="/alimentacao">
-                        <span className="nav-btn"> <img src={alimentacaoBtn} className="" alt="botão do menu inicio"/> Alimentação </span>
-                    </Link>
+                </thead>
 
-                    <hr/>
+                <tbody>
+                    {data?.map((item, index, arr) => (
 
-                    <Link to="/vacinacao">
-                        <span className="nav-btn"> <img src={vacinacaoBtn} className="" alt="botão do menu inicio"/> Vacinação </span>
-                    </Link> 
-                    
-                    <hr/>
-                </nav>
+                        <tr className="table-tablebody-row" key={item.id}>
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.id}
+                            </td>
 
-                <section className="main-container">
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                {item.tipo}
+                            </td>
 
-                    <aside className="container-btn-menu">
-                        <div className="container-img">
-                            <img src={burguerImg} className="burguer-img" alt="botão do menu" onClick={openNav}/>
-                        </div>
-                    </aside>
+                            <td className={arr.length == index + 1 ? "last-table-row" : "table-body-border"}>
+                                <img className="img-editar" onClick={(e) => handleClickEdicao(item)} src={edit} alt="Botao de Edição" />
+                            </td>
 
-                    <main id="main" className="modulo-container">
+                        </tr>
+                    ))}
 
-                        <span className="th-titulo-tabela">Espécies Cadastrados</span>
 
-                        <table className="container-table">
-                                
-                            <thead>
-                    
-                                <tr>
-                                    <th className="table-header-border">
-                                        Identificador
-                                    </th> 
+                </tbody>
 
-                                    <th className="table-header-border">
-                                        Nome
-                                    </th> 
 
-                                    <th className="table-header-border">
-                                        Editar
-                                    </th> 
+            </table>
 
-                                </tr>
-                                
-                                
-                            </thead>
+            <span className="th-footer-tabela">Quantidade de Raças cadastradas: {data?.length}</span>
 
-                            <tbody>
-                                {data?.map((item, index, arr) => (
-
-                                    <tr className="table-tablebody-row" key={item.id}> 
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.id}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            {item.tipo}
-                                        </td>
-
-                                        <td className={arr.length == index+1 ? "last-table-row" : "table-body-border"}> 
-                                            <img className="img-editar" onClick={(e) => handleClickEdicao(item)} src={edit} alt="Botao de Edição" />
-                                        </td>
-
-                                    </tr>
-                                ))}
-
-                                
-                            </tbody>
-
-                            
-                        </table>
-
-                        <span className="th-footer-tabela">Quantidade de Raças cadastradas: {data?.length}</span>
-                    </main>
-                    
-                </section>
-
-            </div>
-
-        {/* MODAL CADASTRO ESPECIE*/}
+            {/* MODAL CADASTRO ESPECIE*/}
 
             <Modal
                 id="modal-edicao-especie"
@@ -222,13 +164,13 @@ export default function PaginaEspecie(props) {
 
                 <Box id="modal-cadastro-especie-dropshadow" sx={style}>
 
-                    <div className="modal-container" style={{...style, width: 600}}>
+                    <div className="modal-container" style={{ ...style, width: 600 }}>
 
                         <h4 className="titulo-modal"> CADASTRO ESPECIE </h4>
-                            
+
                         <div className="container-form">
 
-                            <form onSubmit={formikEspecie.handleSubmit}> 
+                            <form onSubmit={formikEspecie.handleSubmit}>
 
                                 <div className="">
 
@@ -241,7 +183,7 @@ export default function PaginaEspecie(props) {
                                         onChange={formikEspecie.handleChange}
                                         error={hasFormError(formikEspecie, "especie")}
                                         disabled={true}
-                                    />  
+                                    />
 
                                     <Input
                                         id="especie"
@@ -251,25 +193,25 @@ export default function PaginaEspecie(props) {
                                         value={formikEspecie.values.especie}
                                         onChange={formikEspecie.handleChange}
                                         error={hasFormError(formikEspecie, "especie")}
-                                    />  
+                                    />
 
                                 </div>
-                                
+
                                 <div className="container-submit">
                                     <Button type="submit" variant="contained"> Enviar </Button>
                                 </div>
-                                
+
                             </form>
 
                         </div>
 
                     </div>
                 </Box>
-                
+
 
             </Modal>
-        
-        {/* FIM MODAL CADASTRO ESPECIE*/}
+
+            {/* FIM MODAL CADASTRO ESPECIE*/}
 
 
 
