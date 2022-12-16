@@ -29,23 +29,35 @@ export default function PaginaEspecie(props) {
         return null;
     };
 
-    const atualizaHookData = () => {
-        listarEspecies(function (resp) {
-            if (!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
-            setData(resp.body);
-        });
+    const atualizaHookData = async () => {
+        try {
+            const dadosListaEspecie = await listarEspecies();
+            if(!!dadosListaEspecie) setData(dadosListaEspecie);
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     const handleClickEdicao = (item) => {
         let especieId = item.id;
-        recuperarEspeciePorId(especieId, function (resp) {
-            if (!resp.success) return window.alert(resp.reasonPhrase)
 
-            setOpenEdicao(true);
+        buscarDadosEdicaoEspecies(especieId);
+    }
 
-            formikEspecie.values.id = resp.body.id;
-            formikEspecie.values.especie = resp.body.tipo;
-        })
+    const buscarDadosEdicaoEspecies = async (id) => {
+        try {
+            const dadosEspecie = await recuperarEspeciePorId(id);
+
+            if(!!dadosEspecie) {
+                setOpenEdicao(true);
+    
+                formikEspecie.values.id = dadosEspecie.id;
+                formikEspecie.values.especie = dadosEspecie.tipo;
+            }
+        } catch (err) {
+            throw err.reasonPhrase ? window.alert(err.reasonPhrase) : window.alert(err.message)
+        }
+        
     }
 
     const handleClose = (tipoModal) => {

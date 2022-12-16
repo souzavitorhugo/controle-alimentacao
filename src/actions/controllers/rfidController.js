@@ -1,13 +1,8 @@
-import {API_URL} from '../util';
+import {AxiosInstance} from '../util';
 
-import axios from 'axios';
-
-export async function listarRFID(callback) {
-    axios.get(`${API_URL}/api/RFID/ListarRfids`)
-        .then(function(response) {
-            callback(response.data);
-        })
-        .catch(function(response){
-            callback(response);
-        })
+export const listarRFID = async () => {
+    return AxiosInstance.get("/api/RFID/ListarRfids")
+    .then((resp) => {
+        return resp.data.body
+    })
 }

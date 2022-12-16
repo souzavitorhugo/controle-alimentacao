@@ -1,18 +1,10 @@
-import logo from './logo.svg';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
 import './App.css';
 
 import Navigator from './components/Navigation/index';
 import Header from './components/Header/index';
 import burguerImg from "./append/burguer-menu.png";
-
-import PaginaPrincipal from './pages/PaginaPrincipal/index';
-import PaginaAlimentacao from './pages/PaginaAlimentacao/index';
-import PaginaAnimais from './pages/PaginaAnimais/index';
-import PaginaVacinacao from './pages/PaginaVacinacao/index';
-import PaginaRaca from './pages/PaginaRaca/index'
-import PaginaEspecie from './pages/PaginaEspecie/index'
 
 function App() {
 

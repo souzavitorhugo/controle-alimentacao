@@ -47,21 +47,30 @@ export default function PaginaAnimais(props) {
 
     const handleClickEdicao = (item) => {
         let animalId = item.id;
-        recuperarAnimalPorId(animalId, function (resp) {
-            if (!resp.success) return window.alert(resp.reasonPhrase)
 
-            setOpenAnimalEdicao(true);
-            atualizaHookRFID('todos');
+        buscarDadosEdicaoAnimal(animalId);
+    }
 
-            formikAnimalEdicao.values.id = resp.body.id;
-            formikAnimalEdicao.values.rfid = resp.body.codigoRfId;
-            formikAnimalEdicao.values.animal = resp.body.tipoAnimal.id;
-            formikAnimalEdicao.values.raca = resp.body.raca.id;
-            formikAnimalEdicao.values.dataNascimento = resp.body.dataNacimento.split('T')[0];
-            formikAnimalEdicao.values.genero = resp.body.genero === true ? 1 : 0;
-            formikAnimalEdicao.values.peso = resp.body.peso;
-            formikAnimalEdicao.values.abate = resp.body.abat_Morte === true ? 0 : 1;
-        })
+    const buscarDadosEdicaoAnimal = async (id) => {
+        try {
+            const dadosAnimal = await recuperarAnimalPorId(id);
+
+            if(!!dadosAnimal) {
+                setOpenAnimalEdicao(true);
+                atualizaHookRFID('todos');
+    
+                formikAnimalEdicao.values.id = dadosAnimal.id;
+                formikAnimalEdicao.values.rfid = dadosAnimal.codigoRfId;
+                formikAnimalEdicao.values.animal = dadosAnimal.tipoAnimal.id;
+                formikAnimalEdicao.values.raca = dadosAnimal.raca.id;
+                formikAnimalEdicao.values.dataNascimento = dadosAnimal.dataNacimento.split('T')[0];
+                formikAnimalEdicao.values.genero = dadosAnimal.genero === true ? 1 : 0;
+                formikAnimalEdicao.values.peso = dadosAnimal.peso;
+                formikAnimalEdicao.values.abate = dadosAnimal.abat_Morte === true ? 0 : 1;
+            }
+        } catch(err) {
+            throw err.reasonPhrase? window.alert(err.reasonPhrase) : window.alert(err.message);
+        }
     }
 
     const handleChangeEspecies = (event) => {
@@ -120,6 +129,7 @@ export default function PaginaAnimais(props) {
 
             try {
                 const data = await editarAnimais(dtoCadastro);
+
                 if (!!data?.success) {
                     handleClose('animalEdicao');
                     atualizaHookData();
@@ -162,7 +172,7 @@ export default function PaginaAnimais(props) {
             };
             try {
                 const data = await cadastrarAnimais(dtoCadastro);
-                debugger;
+
                 if (!!data?.success) {
                     handleClose('animal');
                     atualizaHookData();
@@ -262,25 +272,24 @@ export default function PaginaAnimais(props) {
         }
     }
 
-    const atualizaHookRFID = (tipo) => {
-        if (tipo === 'ativos') {
-            listarRFID(function (resp) {
-                if (!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+    const atualizaHookRFID = async (tipo) => {
+        try {
+            const listaRFID = await listarRFID();
 
-                let listaRetornoAPI = resp.body;
+            if (tipo === 'ativos') {
+                let listaRetornoAPI = listaRFID;
                 let listaInativos = listaRetornoAPI.filter(item => item.emUso === false && item.ativo === true);
                 setListaRfids(listaInativos);
-            });
-        }
-
-        if (tipo === 'todos') {
-            listarRFID(function (resp) {
-                if (!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
-
-                let listaRetornoAPI = resp.body;
+            }
+    
+            if (tipo === 'todos') {
+                let listaRetornoAPI = listaRFID;
                 setListaRfids(listaRetornoAPI);
-            });
+            }
+        } catch (err) {
+            throw err.reasonPhrase ? window.alert(err.reasonPhrase) : window.alert(err.message);
         }
+        
 
     }
 
@@ -289,7 +298,7 @@ export default function PaginaAnimais(props) {
             const dadosListaEspecie = await listarEspecies();
             if(!!dadosListaEspecie) setListaEspecies(dadosListaEspecie);
         } catch(err) {
-            debugger;
+            console.log(err);
         }
     }
 
@@ -558,7 +567,7 @@ export default function PaginaAnimais(props) {
                 <Box id="modal-cadastro-animal-dropshadow" sx={style}>
                     <div className="modal-container" style={{ ...style, width: 600 }}>
 
-                        <h4 className="titulo-modal"> CADASTRO RACA</h4>
+                        <h4 className="titulo-modal"> CADASTRO RAÇA</h4>
 
                         <div className="container-form">
 

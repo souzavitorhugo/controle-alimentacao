@@ -10,7 +10,7 @@ import { listarRacas, listarEspecies } from '../../../actions/controllers/animai
 
 export default function ComboRacaTipoAnimal() {
     const [listaRacas, setListaRacas] = useState();
-    const [listaTiposAnimais, setListaTiposAnimais] = useState();
+    const [listaEspecies, setListaEspecies] = useState();
 
 
     const [racas, setRacas] = useState('');
@@ -48,11 +48,18 @@ export default function ComboRacaTipoAnimal() {
 
     useEffect(() => {
 
-        listarEspecies(function(resp) {
-            if(!resp.success) return window.alert("Erro na consulta ao banco das especies, por favor tente novamente");
-            setListaTiposAnimais(resp.body);
-        })
+        atualizaHookEspecies();
+        
     }, [])
+
+    const atualizaHookEspecies = async () => {
+        try {
+            const dadosListaEspecie = await listarEspecies();
+            if(!!dadosListaEspecie) setListaEspecies(dadosListaEspecie);
+        } catch(err) {
+            console.log(err);
+        }
+    }
 
     return (
         <Fragment>
@@ -68,7 +75,7 @@ export default function ComboRacaTipoAnimal() {
                         onChange={handleChangeEspecies}
                     >
                         
-                        {listaTiposAnimais?.map((tipoAnimal) => (
+                        {listaEspecies?.map((tipoAnimal) => (
                             <MenuItem key={tipoAnimal.id} value={tipoAnimal.id}> {tipoAnimal.tipo}</MenuItem>
                         ))}
 

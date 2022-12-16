@@ -42,6 +42,9 @@ export default function PaginaRaca(props) {
 
     const handleClickEdicao = (item) => {
         let especieId = item.id;
+
+        buscarDadosEdicaoRaca(especieId);
+
         recuperarRacaPorId(especieId, function (resp) {
             if (!resp.success) return window.alert(resp.reasonPhrase)
 
@@ -52,6 +55,22 @@ export default function PaginaRaca(props) {
             formikRaca.values.animal = resp.body.tipoAnimal.id;
 
         })
+    }
+
+    const buscarDadosEdicaoRaca = async (id) => {
+        try {
+            const dadosRaca = await recuperarRacaPorId(id);
+
+            if(!!dadosRaca) {
+                setOpenEdicao(true);
+
+                formikRaca.values.id = dadosRaca.id;
+                formikRaca.values.raca = dadosRaca.raca;
+                formikRaca.values.animal = dadosRaca.tipoAnimal.id;
+            }
+        } catch(err) {
+            throw err.reasonPhrase ? window.alert(err.reasonPhrase) : window.alert(err.message)
+        }
     }
 
     const atualizaHookData = async () => {

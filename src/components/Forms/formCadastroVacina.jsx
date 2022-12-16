@@ -28,15 +28,22 @@ export default function FormCadastroVacina() {
     });
 
     useEffect(() => {
-        listarRFID(function(resp) {
-            if(!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
-            
-            let listaRetornoAPI = resp.body;
-            let listaCadastrados = listaRetornoAPI.filter(item => item.emUso === true && item.ativo === true);
-            setListaRfids(listaCadastrados);
-        });
-
+        atualizaHookListaRFID();
     }, [])
+
+    const atualizaHookListaRFID = async () => {
+        try {
+            const listaRfids = await listarRFID();
+
+            if(!!listaRfids) {
+                let listaRetornoAPI = listaRfids;
+                let listaInativos = listaRetornoAPI.filter(item => item.emUso === false);
+                setListaRfids(listaInativos);
+            }
+        } catch (err) {
+            throw err.reasonPhrase ? window.alert(err.reasonPhrase) : window.alert(err.message);
+        }
+    }
 
     const formik = useFormik({
         initialValues: {

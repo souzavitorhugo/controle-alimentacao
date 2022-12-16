@@ -26,14 +26,17 @@ export default function FormCadastroAplicacao() {
     });
 
     useEffect(() => {
-        listarVacinacoes(function(resp) {
-            if(!resp.success) return window.alert("Erro na consulta ao banco das vacinas, por favor tente novamente");
-            
-            let listaRetornoAPI = resp.body;
-            setVacinas(listaRetornoAPI);
-        });
-
+        atualizaHookVacinas();
     }, [])
+
+    const atualizaHookVacinas = async () => {
+        const listaVacinas = await listarVacinacoes();
+
+        if(!!listaVacinas) {
+            let listaRetornoAPI = listaVacinas;
+            setVacinas(listaRetornoAPI);
+        }
+    }
 
     const formik = useFormik({
         initialValues: {

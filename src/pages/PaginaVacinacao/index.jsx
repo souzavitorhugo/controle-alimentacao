@@ -186,23 +186,27 @@ export default function PaginaVacinacao(props) {
         setOpenAplicacao(false);
     };
 
-    const atualizaHookVacinacoes = () => {
-        listarVacinacoes(function (resp) {
-            if (!resp.success) return window.alert("Erro na consulta ao banco, por favor tente novamente");
-            setData(resp.body);
-            setVacinas(resp.body);
+    const atualizaHookVacinacoes = async () => {
+        const listaVacinas = await listarVacinacoes();
 
-        });
+        if(!!listaVacinas) {
+            let listaRetornoAPI = listaVacinas;
+            setData(listaRetornoAPI);
+            setVacinas(listaRetornoAPI);
+        }
     }
 
-    const atualizaHookRFIDs = () => {
-        listarRFID(function (resp) {
-            if (!resp.success) return window.alert("Erro na consulta ao banco das raças, por favor tente novamente");
+    const atualizaHookRFIDs = async () => {
+        try {        
+            const listaRFID = await listarRFID();
 
-            let listaRetornoAPI = resp.body;
+            let listaRetornoAPI = listaRFID;
             let listaCadastrados = listaRetornoAPI.filter(item => item.emUso === true && item.ativo === true);
             setListaRfids(listaCadastrados);
-        });
+
+        } catch(err) {
+            throw err.reasonPhrase ? window.alert(err.reasonPhrase) : window.alert(err.message);
+        }
     }
 
     return (

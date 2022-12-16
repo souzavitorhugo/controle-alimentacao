@@ -19,7 +19,7 @@ export function srid() {
 
 export const AxiosInstance = axios.create({
   baseURL: 'https://devcontroleveterinario.azurewebsites.net',
-  timeout: 1000,
+  timeout: 6000,
   headers: {'Content-Type': 'application/json', 'charset': 'utf-8'}
 })
 
